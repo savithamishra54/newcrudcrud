@@ -1,0 +1,127 @@
+<html>
+<body>
+    <form onsubmit="saveToLocalStorage(event)">
+        <label>Choose expenseamount </label>
+        <input id="amount" type="number" name="Chooseexpenseamount"  required/>
+        <label> Choose description</label>
+        <input id="description" type="text" name="Choosedescription"  required/>
+        <label>Choose category</label>
+        <input id="category" type="text" name="Choosecategory" />
+        <button> Add expense </button>
+    </form>
+    <ul id='listOfUsers'></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js "></script>
+    <script>
+         async function saveToLocalStorage(event) {
+            event.preventDefault();
+            const amount = event.target.Chooseexpenseamount.value;
+            const description = event.target.Choosedescription.value;
+            const category = event.target.Choosecategory.value;
+            // localStorage.setItem('name', name);
+            // localStorage.setItem('email', email);
+            // localStorage.setItem('phonenumber', phonenumber)
+            const obj = {
+                amount,
+                description,
+                category
+            }
+            try {
+             await axios.post("https://crudcrud.com/api/866912e38ccc459b91699cfdd8e37f71/book",obj)
+           
+                    showNewUserOnScreen()
+                   
+                }
+                catch(err) {
+                   console.log(err) 
+                }
+              
+            // localStorage.setItem(obj.description, JSON.stringify(obj))
+            // showListofRegisteredUser(obj)
+        }
+    
+
+        window.addEventListener("DOMContentLoaded", () => {
+            
+            axios.get("https://crudcrud.com/api/866912e38ccc459b91699cfdd8e37f71/book")
+                .then((response) => {
+                    console.log(response)
+
+                    for(var i=0;i<response.data.length;i++) {
+                        showNewUserOnScreen(response.data[i]);
+                    }
+                })
+                .catch((error) => {
+                   console.log(error)
+                })
+            
+                // const localStorageObj = localStorage;
+                // const localstoragekeys  = Object.keys(localStorageObj)
+
+                // for(var i =0; i< localstoragekeys.length; i++){
+                //     const key = localstoragekeys[i]
+                //     const userDetailsString = localStorageObj[key];
+                //     const userDetailsObj = JSON.parse(userDetailsString);
+                //     showNewUserOnScreen(userDetailsObj)
+                // }
+            })
+         
+            function showNewUserOnScreen(user){
+                document.getElementById('description').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('category').value ='';
+                // console.log(localStorage.getItem(user.emailId))
+                // if(localStorage.getItem(user.description) !== null){
+                    // removeUserFromScreen(user.description)
+                // }
+
+                const parentNode = document.getElementById('listOfUsers');
+                const childHTML = `<li id=${user._id}> ${user.amount} - ${user.description}
+                                        <button onclick=deleteUser('${user._id}')> Delete User </button>
+                                        <button onclick="editUserDetails('${user.description}','${user.amount}','${user.category}','${user._id}')">Edit User </button>
+                                     </li>`
+
+                parentNode.innerHTML = parentNode.innerHTML + childHTML;
+            }
+
+            //Edit User
+
+               function editUserDetails(Choosedescription, amount, category,userId){
+                
+
+                document.getElementById('description').value = Choosedescription;
+                document.getElementById('amount').value = amount;
+                document.getElementById('category').value =category;
+
+                deleteUser(userId)
+             }
+            
+
+            // deleteUser('abc@gmail.com')
+
+            async function deleteUser(userId){
+                try{
+                  await axios.delete(`https://crudcrud.com/api/866912e38ccc459b91699cfdd8e37f71/book/${userId}`)
+               
+                    removeUserFromScreen(userId)
+                   }
+                   catch(err) 
+                   {
+                    console.log(err)
+                   }
+                // console.log(Choosedescription)
+                // localStorage.removeItem(Choosedescription);
+                // removeUserFromScreen(Choosedescription);
+
+            }
+
+            function removeUserFromScreen(userId){
+                const parentNode = document.getElementById('listOfUsers');
+                const childNodeToBeDeleted = document.getElementById(userId);
+                if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted)
+                }
+            }
+
+        </script>
+</body>
+</html>
